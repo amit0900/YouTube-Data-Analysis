@@ -1,0 +1,49 @@
+Creating Hive Database and Table :
+
+CREATE DATABASE IF NOT EXISTS YOUTUBE_DA;
+
+Creating Table on Hive :
+
+USE YOUTUBE_DA;
+
+CREATE TABLE YOUTUBEDATA
+(
+VIDEO_ID CHAR(11),
+UPLOADER STRING,
+INTERVAL_EST INT,
+CATEGORY STRING,
+LENGTH INT,
+NUMBER_OF_VIEWS INT,
+RATING FLOAT,
+NO_OF_RATING INT,
+NO_OF_COMMENTS INT,
+RATED_VIDEOS_ID INT
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE;
+
+LOADING DATA TO HIVE
+LOAD DATA LOCAL INPATH '/home/cloudera/Downloads/youtubedata.txt' INTO TABLE YOUTUBEDATA;
+
+Problem A : Find out the top 5 categories with maximum number of videos uploaded.
+
+from pyspark.sql import HiveContext
+sqlContext = HiveContext(sc)
+Data = sqlContext.sql("select category,count(category) as categoryCount from YOUTUBE_DA.YOUTUBEDATA group by category order by categoryCount desc limit 5")
+for i in Data.collect():  print(i)
+
+Problem B : Find out the top 10 rated videos.
+
+from pyspark.sql import HiveContext
+sqlContext = HiveContext(sc)
+Data = sqlContext.sql("select video_id,rating from YOUTUBE_DA.YOUTUBEDATA order by rating desc limit 10")
+for i in Data.collect():  print(i)
+
+Problem C : Find out the most viewed videos.
+
+from pyspark.sql import HiveContext
+sqlContext = HiveContext(sc)
+Data = sqlContext.sql("select video_id,NUMBER_OF_VIEWS from YOUTUBE_DA.YOUTUBEDATA order by NUMBER_OF_VIEWS desc limit 10")
+for i in Data.collect():  print(i)
+
+
